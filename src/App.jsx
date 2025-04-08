@@ -1,43 +1,22 @@
 import React from 'react'
-import ReactDOM from 'react-dom/client'
-import noteReducer from "./reducers/noteReducer"
-import { createNote } from './reducers/noteReducer'
-import { toggleImportanceOf } from './reducers/noteReducer'
-
-import { createStore } from 'redux'
-
-
-const store = createStore(noteReducer)
-
-store.dispatch({
-  type: 'NEW_NOTE',
-  payload: {
-    content: 'the app state is in redux store',
-    important: true,
-    id: 1
-  }
-})
-
-store.dispatch({
-  type: 'NEW_NOTE',
-  payload: {
-    content: 'state changes are made with actions',
-    important: false,
-    id: 2
-  }
-})
+import { createNote, toggleImportanceOf } from './reducers/noteReducer'
+import { useSelector, useDispatch } from 'react-redux'
 
 const App = () => {
+
+  const dispatch = useDispatch()
+  const notes = useSelector(state => state) //devuelvo todas las notas
+  //const importantNotes = useSelector(state => state.filter(note => note.important))   por ejemplo si quisiera devolver las notas marcadas como importantes seria asi
 
   const addNote = (event) => {
     event.preventDefault()
     const content = event.target.note.value
     event.target.note.value = ''
-    store.dispatch(createNote(content))
+    dispatch(createNote(content))
   }
 
   const toggleImportance = (id) => {
-    store.dispatch(toggleImportanceOf(id))
+    dispatch(toggleImportanceOf(id))
   }
 
   return(
@@ -47,7 +26,7 @@ const App = () => {
         <button type="submit">add</button>
       </form>
       <ul>
-        {store.getState().map(note=>
+        {notes.map(note=>
           <li key={note.id} onClick={() => toggleImportance(note.id)}>
             {note.content} <strong>{note.important ? 'important' : ''}</strong>
           </li>
