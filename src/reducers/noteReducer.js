@@ -1,3 +1,5 @@
+import { createSlice } from "@reduxjs/toolkit"
+
 const initialState = [
   {
     content: 'reducer defines how redux store works',
@@ -11,40 +13,28 @@ const initialState = [
   },
 ]
 
-const noteReducer = (state = initialState, action) => {
-  switch (action.type) {
-    case 'NEW_NOTE':
-      return state.concat(action.payload) //Le concateno al array state una nueva nota, recordar que esto devuelve un nuevo array, ya que las funciones deben ser puras
-    case "TOGGLE_IMPORTANCE": {
-      const id = action.payload.id //El id que voy a usar para buscar la nota lo encuentro en action.payload.id
-      const noteToChange = state.find(n => n.id === id) //Busco la nota con el id de la accion que realice
-      const changedNote = {...noteToChange, important: !noteToChange.important } //Creo una nueva nota que es una copia de la original pero tiene todos las propiedades iguales menos la propiedad importante que esta cambiada al valor opuesto (de true a false o al revez)
-      //Retorno una copia del array state pero que va a tener todas las notas sin modificar iguales y la nota modificada cambiada por changedNote (la nota modificada es la que tiene el id del payload), es importante el hecho de que es una copia del array state pero modificado, ya que las funciones deben ser puras
-      return state.map(note => note.id !== id ? note : changedNote)
-  }
-  default:
-    return state //Retorno el nuevo estado
-  }
-}
-
 const generateId = () => Number((Math.random() * 1000000).toFixed(0))
 
-export const createNote = (content) => {
-  return {
-    type: 'NEW_NOTE',
-    payload: {
-      content,
-      important: false,
-      id: generateId()
+const noteSlice = createSlice({
+  name: "notes",
+  initialState,
+  reducers: {
+    createNote(state, action) {
+      const content = action.payload
+      state.push({  //Pareciera que estoy usando una funcion impura y mutando state pero no, ya que redux toolkit usa la libreria Immer que retorna un nuevo estado sin mutar el anterior.
+        content,
+        important:false,
+        id:generateId()
+      })
+    },
+    toggleImportanceOf(state, action) {
+      const id = action.payload
+      const noteToChange = state.find(n => n.id === id)
+      const changedNote = { ...noteToChange, important: !noteToChange.important }
+      return state.map(note => note.id !== id ? note : changedNote) //devuelve un nuevo state donde si el id de la nota es distinto de id se queda igual y la nota con id igual a id se reemplaza por changedNote 
     }
   }
-}
+})
 
-export const toggleImportanceOf = (id) => {
-  return {
-    type: 'TOGGLE_IMPORTANCE',
-    payload: { id }
-  }
-}
-
-export default noteReducer
+export const { createNote, toggleImportanceOf } = noteSlice.actions
+export default noteSlice.reducer
