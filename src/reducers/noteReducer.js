@@ -1,4 +1,4 @@
-import { createSlice } from "@reduxjs/toolkit"
+import { createSlice, current } from "@reduxjs/toolkit"
 
 const initialState = [
   {
@@ -31,6 +31,7 @@ const noteSlice = createSlice({
       const id = action.payload
       const noteToChange = state.find(n => n.id === id)
       const changedNote = { ...noteToChange, important: !noteToChange.important }
+      console.log(current(state)) //Usando current y console log puedo imprimir el estado actual del store en la consola
       return state.map(note => note.id !== id ? note : changedNote) //devuelve un nuevo state donde si el id de la nota es distinto de id se queda igual y la nota con id igual a id se reemplaza por changedNote 
     }
   }
