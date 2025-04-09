@@ -1,4 +1,17 @@
-const noteReducer = (state = [], action) => {
+const initialState = [
+  {
+    content: 'reducer defines how redux store works',
+    important: true,
+    id: 1,
+  },
+  {
+    content: 'state of store can contain any data',
+    important: false,
+    id: 2,
+  },
+]
+
+const noteReducer = (state = initialState, action) => {
   switch (action.type) {
     case 'NEW_NOTE':
       return state.concat(action.payload) //Le concateno al array state una nueva nota, recordar que esto devuelve un nuevo array, ya que las funciones deben ser puras

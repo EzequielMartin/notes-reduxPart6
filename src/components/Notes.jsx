@@ -13,7 +13,18 @@ const Note = ({ note, handleClick }) => {
 const Notes = () => {
 
   const dispatch = useDispatch()
-  const notes = useSelector(state => state)
+  const notes = useSelector(state => {
+    switch (state.filter) {
+      case "ALL":
+        return state.notes // Ahora que mi state es combinado tengo que acceder al parametro que quiero, es este caso es a notes.
+      case "IMPORTANT":
+        return state.notes.filter(note => note.important === true)
+      case "NONIMPORTANT":
+        return state.notes.filter(note => note.important === false)
+      default:
+        return state.notes
+    }
+  }) 
 
   return(
     <ul>
